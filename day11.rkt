@@ -8,6 +8,8 @@
 ;; are brought up in 1 step)
 
 ;; The proper way to do this is via search tree
+;; Another proper alternative would be to base the solution
+;; on the recursive tower of hanoi solution.
 
 ;; TODO
 
