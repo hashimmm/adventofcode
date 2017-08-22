@@ -1,5 +1,8 @@
 #lang racket
 
+;; Done, but still:
+;; TODO: Why do I get duplicates in my visited list? I thought I didn't, but I did.
+
 (require srfi/60)
 
 (define FAVORITE-NUMBER 1364)
@@ -139,15 +142,11 @@
 ;; and at 1 iteration we have visited '(1 1), where we've actually visited '(1 1)
 ;; at 0 iterations.
 
-;; Though for some reason my answer's incorrect :(
 
 (define (max-pts)
   (define (bfs moves visited next)
-    (displayln moves)
-    (displayln visited)
-    (displayln next)
     (if (= 50 moves)
-        (length visited)
+        (length (remove-duplicates visited))
         (bfs
          (+ 1 moves)
          (append visited next)
