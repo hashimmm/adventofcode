@@ -94,10 +94,15 @@
 
 ;; PS Gotta love how the only real difference between dfs and bfs is which way
 ;; the append is done for the "next" list
+
 ;; PPS Not that it makes any difference whether I did a bfs or dfs. But earlier
 ;; I went bfs thinking maybe not all paths terminate, and we needed to find the shortest
 ;; (first) one, but the question in part 2 implied this terminates
 ;; guaranteed and we needed to be exhaustive anyway so dfs.
+
+;; PPPS So someone made a very valid point on some python solution post on reddit:
+;; we could've just done an exhaustive bfs and the last goal point's length would've
+;; been the solution, no more length checks.
 
 (define (path-length pv)
   (length (pos-vector-path pv)))
