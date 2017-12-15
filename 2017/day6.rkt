@@ -1,11 +1,5 @@
 #lang racket
 
-;(require data/collection)
-;(require data/pvector)
-
-;; gotta ask why my solution using index-of and stuff
-;; from data/collection worked for the test problem but
-;; went into an infinite loop for the actual input
 
 (define (indexed lst)
   (define (indexer idx lst)
