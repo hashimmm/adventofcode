@@ -37,7 +37,8 @@
 (define (num-shortest-by-removing polymer)
   (apply
    min
-   (map (λ(x) (find-num-units (remove-type polymer x))) (all-types polymer))))
+   (for/list ([type (in-list (all-types polymer))])
+     (find-num-units (remove-type polymer type)))))
 
 (define (all-types polymer)
   (remove-duplicates (map char-downcase polymer)))
