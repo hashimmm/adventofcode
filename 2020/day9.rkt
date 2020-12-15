@@ -20,6 +20,13 @@
                      (combinations window 2)))
          value)))
 
+;; Instead of checking all windows, one can start with the full list's sum,
+;; and whenever sum > target, drop from the right (the value on the right always
+;; always has it's constituents to its left anyway) and whenever sum < target,
+;; drop from the left and add back to the right.
+;;
+;; For that algo, it makes much more sense to use vectors and vector copy.
+
 (define (find-contiguous target l)
   (for*/or ([size (in-range 2 (length l))]
             [window (in-list (windowed size l))])
