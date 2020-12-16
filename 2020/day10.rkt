@@ -83,6 +83,23 @@
           ans
           (* ans (loop next-1s))))))
 
+#|
+Looking around the interwebs...
+There's another algo for part 2, which is roughly the same thing but depth-first:
+
+(define memo (make-hash))
+(define end (sub1 (vector-length arr)))
+(define (get val)
+  (cond [ (not (vector-member val arr)) 0 ]
+        [ (= val (vector-ref arr end))  1 ]
+        [ else (or (hash-ref memo val #f)
+                   (let ([ x (+ (get (+ val 1)) (get (+ val 2)) (get (+ val 3))) ])
+                     (hash-set! memo val x)
+                     x)) ]))
+
+All these years and recursion can _still_ look funny sometimes O_o
+|#
+
 (module+ test
   (require rackunit)
   (define sample-list
