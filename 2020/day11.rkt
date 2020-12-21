@@ -46,6 +46,9 @@
 ;; keeps a handle on things. That is to say, thread groups to the rescue!
 ;;
 ;; Anyway, a good half an hour or so later of the CPU chugging along, I got the right answer :)
+;;
+;; Part 2 is quite doable in this same manner, there wouldn't be much to change and it'd still work,
+;; but anyway part 2 is done in day11-again.rkt
 
 (require racket/async-channel)
 
