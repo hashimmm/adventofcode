@@ -82,15 +82,6 @@
           largest-basins)))
   (apply * largest-basins))
 
-;; Note about part 2:
-;; First I was checking eq+higher in get-basin-map, then had to additionally
-;; filter so that the point isn't in basin-coords already.
-;; Saw in another solution that we can just check for higher-than.
-;; Then, I noticed, that removing that check made the program slower!!
-;; I'm not sure why.
-;; So I brought back the >= and set-member?
-;; ... it's only the set-member that's making a difference btw. Not the >=
-
 (module+ test
   (require rackunit)
   (define test-inp "2199943210
