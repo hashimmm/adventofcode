@@ -42,16 +42,6 @@
      (define current-is-lower? (andmap (λ(h) (> h current-point)) adj-points))
      (and current-is-lower? (list x y)))))
 
-#;(define (risk-level-sum/1 caves)
-  (for*/sum ([y (in-range (vector-length caves))]
-             [x (in-range (vector-length (vector-ref caves 0)))])
-    (define adj-points (get-adjacent-points caves x y))
-    (define current-point (get-point caves x y))
-    (define current-is-lower? (andmap (λ(h) (> h current-point)) adj-points))
-    (if current-is-lower?
-        (add1 current-point)
-        0)))
-
 (define (risk-level-sum/1 caves)
   (for/sum ([x+y (in-list (get-lows caves))])
     (add1 (get-point caves (first x+y) (second x+y)))))
@@ -65,18 +55,20 @@
           (match-define (list bx by) (first to-check))
           (define bh (get-point caves bx by))
           (define adj-coords (get-adj-coords caves bx by))
-          (define eq-or-higher
+          (define higher
             (list->set (filter (λ(x+y)
                                  (match-define (list x y) x+y)
                                  (define h (get-point caves x y))
-                                 (and (>= h bh)
-                                      (not (= h 9))
-                                      (not (set-member? basin-coords x+y))))
+                                 (and (> h bh)
+                                      (not (= h 9))))
                                adj-coords)))
-          (define new-basin-coords (set-union (set-add eq-or-higher (list bx by))
+          ;; First I was checking eq+higher above, then had to additionally
+          ;; filter so that the point isn't in basin-coords already.
+          ;; Saw in another solution that we can just check for higher-than.
+          (define new-basin-coords (set-union (set-add higher (list bx by))
                                               basin-coords))
           (loop new-basin-coords
-                (append (set->list eq-or-higher) (rest to-check)))))))
+                (append (set->list higher) (rest to-check)))))))
 
 (define (largest-basins-mul/2 caves)
   (define low-coords (get-lows caves))
