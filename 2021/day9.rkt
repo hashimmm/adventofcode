@@ -59,12 +59,10 @@
             (list->set (filter (λ(x+y)
                                  (match-define (list x y) x+y)
                                  (define h (get-point caves x y))
-                                 (and (> h bh)
+                                 (and (>= h bh)
+                                      (not (set-member? basin-coords x+y))
                                       (not (= h 9))))
                                adj-coords)))
-          ;; First I was checking eq+higher above, then had to additionally
-          ;; filter so that the point isn't in basin-coords already.
-          ;; Saw in another solution that we can just check for higher-than.
           (define new-basin-coords (set-union (set-add higher (list bx by))
                                               basin-coords))
           (loop new-basin-coords
@@ -84,17 +82,14 @@
           largest-basins)))
   (apply * largest-basins))
 
-;; Unused function, used it for debugging, left it in for no real reason.
-(define (printmap mapset caves size-x size-y)
-  (define maplist (set->list mapset))
-  (define as-lists
-    (for/list ([y (in-range size-y)])
-      (for/list ([x (in-range size-x)])
-        (if (set-member? mapset (list x y))
-            (number->string (get-point caves x y))
-            "."))))
-  (string-join (map (λ(row) (string-join row " ")) as-lists)
-               "\n"))
+;; Note about part 2:
+;; First I was checking eq+higher in get-basin-map, then had to additionally
+;; filter so that the point isn't in basin-coords already.
+;; Saw in another solution that we can just check for higher-than.
+;; Then, I noticed, that removing that check made the program slower!!
+;; I'm not sure why.
+;; So I brought back the >= and set-member?
+;; ... it's only the set-member that's making a difference btw. Not the >=
 
 (module+ test
   (require rackunit)
