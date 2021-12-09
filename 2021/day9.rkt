@@ -109,5 +109,5 @@
 
 (module+ main
   (define inp (parse (with-input-from-file "day9.txt" port->lines)))
-  (risk-level-sum/1 inp)
-  (time (largest-basins-mul/2 inp)))
+  (risk-level-sum/1 inp) ;512
+  (time (largest-basins-mul/2 inp)) #;1600104 )
