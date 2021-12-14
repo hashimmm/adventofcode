@@ -135,3 +135,4 @@ CN -> C
   (define-values (loc rules) (parse (with-input-from-file "day14.txt" port->lines)))
   (diff/1 loc rules) ;;2797
   (diff/2 loc rules 40) #;2926813379532 )
+;; TODO: recursive version.
