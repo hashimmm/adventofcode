@@ -105,6 +105,39 @@
 
   (- (apply max (hash-values final)) (apply min (hash-values final))))
 
+;; Memoized recursive version, so much neater
+(define (diff/3 loc rules num-steps)
+  (define memo (make-hash))
+  (define (merge-counts . counts)
+    (for/fold ([a (hash)])
+              ([c (in-list counts)])
+      (for/fold ([x a])
+                ([(k v) (in-hash c)])
+        (hash-update x k (λ(n) (+ n v)) 0))))
+  (define (get-counts x y n)
+    (if (hash-ref memo `(,x ,y ,n) #f)
+        (hash-ref memo `(,x ,y ,n))
+        (if (= 0 n)
+            (hash)
+            (let ([new-char (hash-ref rules `(,x ,y))])
+              (define return-value
+                (merge-counts (hash new-char 1)
+                              (get-counts x new-char (sub1 n))
+                              (get-counts new-char y (sub1 n))))
+              (hash-set! memo `(,x ,y ,n) return-value)
+              return-value))))
+  (define final-counts
+    (let loop ([counts (samples->hash loc)]
+               [pairs (zip loc (rest loc))])
+      (if (null? pairs)
+          counts
+          (loop (merge-counts counts
+                              (get-counts (first (first pairs))
+                                          (second (first pairs))
+                                          num-steps))
+                (rest pairs)))))
+  (- (apply max (hash-values final-counts)) (apply min (hash-values final-counts))))
+
 (module+ test
   (require rackunit)
   (define inp "NNCB
@@ -129,10 +162,11 @@ CN -> C
   (define-values (loc rules) (parse (string-split inp "\n")))
   (check-equal? (diff/1 loc rules) 1588)
   (check-equal? (diff/2 loc rules 10) 1588)
-  (check-equal? (diff/2 loc rules 40) 2188189693529))
+  (check-equal? (diff/2 loc rules 40) 2188189693529)
+  (check-equal? (diff/3 loc rules 10) 1588)
+  (check-equal? (diff/3 loc rules 40) 2188189693529))
 
 (module+ main
   (define-values (loc rules) (parse (with-input-from-file "day14.txt" port->lines)))
   (diff/1 loc rules) ;;2797
   (diff/2 loc rules 40) #;2926813379532 )
-;; TODO: recursive version.
