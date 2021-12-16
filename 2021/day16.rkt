@@ -34,9 +34,7 @@
                           #:result (reverse sub-pkts))
                          ([_ (in-naturals)])
                  #:break (= size-offset total-length)
-                 (define p
-                   (parse-pkt (bit-vector-copy packet
-                                               (+ 7 15 size-offset))))
+                 (define p (parse-pkt (bit-vector-copy packet (+ 7 15 size-offset))))
                  (values (cons p sub-pkts)
                          (+ size-offset (Pkt-size p)))))
              (let ([total-sub-pkts (bv->num (bit-vector-copy packet 7 (+ 7 11)))])
@@ -45,19 +43,15 @@
                           #:result (reverse sub-pkts))
                          ([_ (in-naturals)])
                  #:break (= (length sub-pkts) total-sub-pkts)
-                 (define p
-                   (parse-pkt (bit-vector-copy packet
-                                               (+ 7 11 size-offset))))
+                 (define p (parse-pkt (bit-vector-copy packet (+ 7 11 size-offset))))
                  (values (cons p sub-pkts)
                          (+ size-offset (Pkt-size p)))))))]))
   (Pkt version
        type-id
-       (cond [(= type-id 4)
-              (+ 6 (Lit-size value))]
-             [(false? (bit-vector-ref packet 6))
-              (+ 6 1 15 (bv->num (bit-vector-copy packet 7 (+ 7 15))))]
-             [else
-              (apply + (cons (+ 6 1 11) (map Pkt-size value)))])
+       (if (= type-id 4)
+           (+ 6 (Lit-size value))
+           (apply + (cons (+ 6 1 (if (false? (bit-vector-ref packet 6)) 15 11))
+                          (map Pkt-size value))))
        value))
 
 (define (version-sum/1 pkt)
@@ -70,24 +64,9 @@
               (rest values)))))
 
 (define (hex->bv hex-char)
-  (hash-ref
-   (hash #\0 (bit-vector #f #f #f #f)
-         #\1 (bit-vector #f #f #f #t)
-         #\2 (bit-vector #f #f #t #f)
-         #\3 (bit-vector #f #f #t #t)
-         #\4 (bit-vector #f #t #f #f)
-         #\5 (bit-vector #f #t #f #t)
-         #\6 (bit-vector #f #t #t #f)
-         #\7 (bit-vector #f #t #t #t)
-         #\8 (bit-vector #t #f #f #f)
-         #\9 (bit-vector #t #f #f #t)
-         #\A (bit-vector #t #f #t #f)
-         #\B (bit-vector #t #f #t #t)
-         #\C (bit-vector #t #t #f #f)
-         #\D (bit-vector #t #t #f #t)
-         #\E (bit-vector #t #t #t #f)
-         #\F (bit-vector #t #t #t #t))
-   hex-char))
+  (string->bit-vector
+   (~a (number->string (string->number (string hex-char) 16) 2)
+       #:min-width 4 #:left-pad-string "0" #:align 'right)))
 
 (define (parse inp)
   (define as-bvs (map hex->bv (string->list inp)))
