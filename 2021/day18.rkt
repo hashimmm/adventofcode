@@ -24,23 +24,35 @@
       (reduce splut)))
 
 (define (explode p)
+  ;; Prepare a stack of boxes :)
   (define stack '())
   (define (stack-up! n)
     (define b (box n))
     (set! stack (cons b stack))
     b)
+  ;; add-left is basically just add to the top box
   (define (add-l! n)
     (unless (null? stack)
       (set-box! (car stack) (+ n (unbox (car stack))))))
+  ;; Until traversal reaches depth 4, each node is stacked up
+  ;; "!" is the "process this node" function
   (define ! stack-up!)
+  ;; On reaching depth-4, next node will have a number added, then,
+  ;; processing is a no-op
   (define (make-add-r! n)
     (λ(x) (set! ! identity) (+ n x)))
+  ;; On reaching depth 4, set next node to have a number added,
+  ;; and the node-4 trigger becomes a normal traversal.
+  ;; "x" is the "traverse" function.
+  ;; "x!" is the explode-this-node! function
   (define (x! m n)
     (add-l! m)
     (set! x! (λ(m n) (P (x m 5)
                         (x n 5))))
     (set! ! (make-add-r! n))
     0)
+  ;; Simply traverse using the functions defined above and
+  ;; everything "just works" :)
   (define (x p-or-n d)
     (match* (d p-or-n)
       [(4 (P m n))
@@ -50,12 +62,14 @@
           (x r (add1 d)))]
       [(n i)
        (! i)]))
+  ;; And in the end, throw out our stack of boxes.
   (define (resolve p)
     (match p
       [(P l r)
        (P (resolve l) (resolve r))]
       [(box n) n]
       [n n]))
+  ;; Voila
   (resolve (x p 0)))
 
 (define (split p)
