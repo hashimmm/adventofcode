@@ -31,10 +31,10 @@
     b)
   (define (add-l! n)
     (unless (null? stack)
-      (set-box! (car stack) (+ (if (not (number? n)) (error 'fuck) n) (unbox (car stack))))))
+      (set-box! (car stack) (+ n (unbox (car stack))))))
   (define ! stack-up!)
   (define (make-add-r! n)
-    (λ(x) (set! ! identity) (+ (if (not (number? n)) (error 'fuck2) n) x)))
+    (λ(x) (set! ! identity) (+ n x)))
   (define (x! m n)
     (add-l! m)
     (set! x! (λ(m n) (P (x m 5)
@@ -119,5 +119,5 @@
 
 (module+ main
   (define inputs (map parse-line (with-input-from-file "day18.txt" port->lines)))
-  (mag-of-sum/1 inputs) ;; 4072
-  (largest-mag-of-2/2 inputs) #;4483 )
+  (time (mag-of-sum/1 inputs)) ;; 4072
+  (time (largest-mag-of-2/2 inputs)) #;4483 )
